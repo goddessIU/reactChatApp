@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const messageRoutes = require('./routes/messages');
+const authRoutes = require('../server/routes/auth');
 const app = express();
 const { Server } = require('socket.io');
 const cors = require('cors');
@@ -9,7 +10,17 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
+mongoose
+    .connect(process.env.MONGO_URL)
+    .then(() => {
+        console.log('DB Connection successful');
+    }) 
+    .catch(() => {
+        console.log('DB connection failed');
+    })
+
 app.use('/api/messages', messageRoutes);
+app.use('/api/auth', authRoutes);
 
 const server = app.listen(process.env.PORT, () => {
     console.log('successfully run');
